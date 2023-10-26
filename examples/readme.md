@@ -14,7 +14,7 @@ pip install -e .
 
 To use an external gym environment you allways need to import the corresponding package along with the regular gym package.
 ```Python
-import gym
+import gymnasium as gym
 import gym_sokoban
 ```
 

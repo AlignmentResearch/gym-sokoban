@@ -124,9 +124,9 @@ To get an environment rendered as a tiny world, set the use\_tiny\_world paramet
 Rendering can only be currently done by leveraging the HumanRendering gymnasium wrapper, e.g.:
 
 ```
-import gym
+import gymnasium as gym
 import gym_sokoban
-from gym.wrappers import HumanRendering
+from gymnasium.wrappers import HumanRendering
 
 SEED = 1
 

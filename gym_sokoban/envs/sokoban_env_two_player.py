@@ -1,6 +1,6 @@
 from .sokoban_env import SokobanEnv, CHANGE_COORDINATES
-from gym.spaces import Box
-from gym.spaces.discrete import Discrete
+from gymnasium.spaces import Box
+from gymnasium.spaces.discrete import Discrete
 from .render_utils import room_to_rgb, room_to_tiny_world_rgb, color_player_two, color_tiny_player_two
 import numpy as np
 

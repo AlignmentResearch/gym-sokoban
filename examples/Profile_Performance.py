@@ -1,5 +1,5 @@
 import cProfile
-import gym
+import gymnasium as gym
 import gym_sokoban
 import time
 import argparse
