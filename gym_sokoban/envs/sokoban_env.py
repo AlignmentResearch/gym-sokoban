@@ -65,7 +65,7 @@ class SokobanEnv(gym.Env):
         return [seed]
 
     def step(self, action, observation_mode='rgb_array'):
-        assert action in ACTION_LOOKUP
+        assert isinstance(action, int) or action.shape == ()
         assert observation_mode in ['rgb_array', 'tiny_rgb_array', 'raw']
 
         self.num_env_steps += 1
@@ -93,7 +93,6 @@ class SokobanEnv(gym.Env):
         observation = self.get_image(self.scale)
 
         info = {
-            "action.name": ACTION_LOOKUP[action],
             "action.moved_player": moved_player,
             "action.moved_box": moved_box,
         }
