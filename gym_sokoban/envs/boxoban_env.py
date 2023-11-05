@@ -22,7 +22,7 @@ class BoxobanEnv(SokobanEnv):
         super(BoxobanEnv, self).__init__(self.dim_room, max_steps, self.num_boxes, None)
         
 
-    def reset(self):
+    def reset(self, seed=None):
         self.cache_path = '.sokoban_cache'
         self.train_data_dir = os.path.join(self.cache_path, 'boxoban-levels-master', self.difficulty, self.split)
 
@@ -49,7 +49,7 @@ class BoxobanEnv(SokobanEnv):
             zip_ref.extractall(self.cache_path)
             zip_ref.close()
         
-        self.select_room()
+        self.select_room(seed=seed)
 
         self.num_env_steps = 0
         self.reward_last = 0
@@ -59,7 +59,7 @@ class BoxobanEnv(SokobanEnv):
 
         return starting_observation
 
-    def select_room(self):
+    def select_room(self, seed=None):
         
         generated_files = [f for f in listdir(self.train_data_dir) if isfile(join(self.train_data_dir, f))]
         source_file = join(self.train_data_dir, random.choice(generated_files))
@@ -77,6 +77,8 @@ class BoxobanEnv(SokobanEnv):
         
         maps.append(current_map)
 
+        if seed is not None:
+            random.seed(seed)
         selected_map = random.choice(maps)
 
         if self.verbose:
