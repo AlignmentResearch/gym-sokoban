@@ -8,7 +8,7 @@ _SURFACES_AND_DIMS: Optional[tuple[list, int]] = None
 
 
 def get_surfaces_and_dims() -> tuple[list, int]:
-    nonlocal _SURFACES_AND_DIMS
+    global _SURFACES_AND_DIMS
 
     if _SURFACES_AND_DIMS is not None:
         return _SURFACES_AND_DIMS
