@@ -1,21 +1,19 @@
+from typing import Optional
 import numpy as np
 import pkg_resources
 import imageio
 
 
-def room_to_rgb(room, room_structure=None):
-    """
-    Creates an RGB image of the room.
-    :param room:
-    :param room_structure:
-    :return:
-    """
-    resource_package = __name__
+_SURFACES_AND_DIMS: Optional[tuple[list, int]] = None
 
-    room = np.array(room)
-    if not room_structure is None:
-        # Change the ID of a player on a target
-        room[(room == 5) & (room_structure == 2)] = 6
+
+def get_surfaces_and_dims() -> tuple[list, int]:
+    nonlocal _SURFACES_AND_DIMS
+
+    if _SURFACES_AND_DIMS is not None:
+        return _SURFACES_AND_DIMS
+
+    resource_package = __name__
 
     # Load images, representing the corresponding situation
     box_filename = pkg_resources.resource_filename(resource_package, '/'.join(('surface', 'box.png')))
@@ -43,16 +41,38 @@ def room_to_rgb(room, room_structure=None):
 
     surfaces = [wall, floor, box_target, box_on_target, box, player, player_on_target]
 
+    assert all(s.shape == wall.shape for s in surfaces), "All tiles must have the same shape"
+
+    assert wall.shape[0] == wall.shape[1]
+
+    _SURFACES_AND_DIMS = surfaces, wall.shape[0]
+    return _SURFACES_AND_DIMS
+
+
+def room_to_rgb(room, room_structure=None):
+    """
+    Creates an RGB image of the room.
+    :param room:
+    :param room_structure:
+    :return:
+    """
+    surfaces, size = get_surfaces_and_dims()
+
+    room = np.array(room)
+    if not room_structure is None:
+        # Change the ID of a player on a target
+        room[(room == 5) & (room_structure == 2)] = 6
+
     # Assemble the new rgb_room, with all loaded images
-    room_rgb = np.zeros(shape=(room.shape[0] * 16, room.shape[1] * 16, 3), dtype=np.uint8)
+    room_rgb = np.zeros(shape=(room.shape[0] * size, room.shape[1] * size, 3), dtype=np.uint8)
     for i in range(room.shape[0]):
-        x_i = i * 16
+        x_i = i * size
 
         for j in range(room.shape[1]):
-            y_j = j * 16
+            y_j = j * size
             surfaces_id = room[i, j]
 
-            room_rgb[x_i:(x_i + 16), y_j:(y_j + 16), :] = surfaces[surfaces_id]
+            room_rgb[x_i:(x_i + size), y_j:(y_j + size), :] = surfaces[surfaces_id]
 
     return room_rgb
 
