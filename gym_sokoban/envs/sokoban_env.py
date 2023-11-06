@@ -50,7 +50,7 @@ class SokobanEnv(gym.Env):
         self.viewer = None
         self.max_steps = max_steps
         self.action_space = Discrete(len(ACTION_LOOKUP))
-        sprite_sz = 16 if render_mode == "rgb_array" else 1
+        sprite_sz = 1 if self.use_tiny_world else 16
         screen_height, screen_width = (dim_room[0] * sprite_sz, dim_room[1] * sprite_sz)
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
         
