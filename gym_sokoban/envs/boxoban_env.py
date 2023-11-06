@@ -14,16 +14,20 @@ class BoxobanEnv(SokobanEnv):
     num_boxes = 4
     dim_room = (10, 10)
 
-    def __init__(self, max_steps=120, difficulty='unfiltered', split='train', cache_path=".sokoban_cache", render_mode="rgb_array"):
+    def __init__(self, max_steps=120, difficulty='unfiltered', split='train', cache_path=".sokoban_cache", render_mode="rgb_array", tinyworld_obs=False):
         self.difficulty = difficulty
         self.split = split
         self.verbose = False
         self.cache_path = cache_path
-        super(BoxobanEnv, self).__init__(dim_room=self.dim_room, max_steps=max_steps, num_boxes=self.num_boxes, render_mode=render_mode)
+        super(BoxobanEnv, self).__init__(dim_room=self.dim_room, max_steps=max_steps, num_boxes=self.num_boxes, render_mode=render_mode, tinyworld_obs=tinyworld_obs)
         
 
-    def reset(self, seed=None):
-        self.train_data_dir = os.path.join(self.cache_path, 'boxoban-levels-master', self.difficulty, self.split)
+    def reset(self, options={}, seed=None):
+        if self.difficulty == 'hard':
+            # Hard has no splits
+            self.train_data_dir = os.path.join(self.cache_path, 'boxoban-levels-master', self.difficulty)
+        else:
+            self.train_data_dir = os.path.join(self.cache_path, 'boxoban-levels-master', self.difficulty, self.split)
 
         if not os.path.exists(self.cache_path):
            
@@ -54,9 +58,9 @@ class BoxobanEnv(SokobanEnv):
         self.reward_last = 0
         self.boxes_on_target = 0
 
-        starting_observation = room_to_rgb(self.room_state, self.room_fixed)
+        starting_observation = self.get_image()
 
-        return starting_observation
+        return starting_observation, {}
 
     def select_room(self, seed=None):
         

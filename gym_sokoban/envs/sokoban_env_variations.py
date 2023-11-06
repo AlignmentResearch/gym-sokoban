@@ -6,11 +6,6 @@ from .boxoban_env import BoxobanEnv
 
 
 class SokobanEnv1(SokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['num_boxes'] = kwargs.get('num_boxes', 3)
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
@@ -18,11 +13,6 @@ class SokobanEnv1(SokobanEnv):
 
 
 class SokobanEnv2(SokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['num_boxes'] = kwargs.get('num_boxes', 5)
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
@@ -31,11 +21,6 @@ class SokobanEnv2(SokobanEnv):
 
 
 class SokobanEnv_Small0(SokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (7, 7))
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
@@ -44,11 +29,6 @@ class SokobanEnv_Small0(SokobanEnv):
 
 
 class SokobanEnv_Small1(SokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (7, 7))
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
@@ -57,11 +37,6 @@ class SokobanEnv_Small1(SokobanEnv):
 
 
 class SokobanEnv_Large0(SokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (13, 11))
         kwargs['max_steps'] = kwargs.get('max_steps', 300)
@@ -71,11 +46,6 @@ class SokobanEnv_Large0(SokobanEnv):
 
 
 class SokobanEnv_Large1(SokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (13, 11))
         kwargs['max_steps'] = kwargs.get('max_steps', 300)
@@ -85,11 +55,6 @@ class SokobanEnv_Large1(SokobanEnv):
 
 
 class SokobanEnv_Large1(SokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (13, 11))
         kwargs['max_steps'] = kwargs.get('max_steps', 300)
@@ -99,11 +64,6 @@ class SokobanEnv_Large1(SokobanEnv):
 
 
 class SokobanEnv_Huge0(SokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (13, 13))
         kwargs['max_steps'] = kwargs.get('max_steps', 300)
@@ -113,11 +73,6 @@ class SokobanEnv_Huge0(SokobanEnv):
 
 
 class FixedTargets_Env_v0(FixedTargetsSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (10, 10))
         kwargs['max_steps'] = kwargs.get('max_steps', 150)
@@ -127,11 +82,6 @@ class FixedTargets_Env_v0(FixedTargetsSokobanEnv):
 
 
 class FixedTargets_Env_v1(FixedTargetsSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (10, 10))
         kwargs['max_steps'] = kwargs.get('max_steps', 150)
@@ -141,11 +91,6 @@ class FixedTargets_Env_v1(FixedTargetsSokobanEnv):
 
 
 class FixedTargets_Env_v2(FixedTargetsSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (7, 7))
         kwargs['max_steps'] = kwargs.get('max_steps', 150)
@@ -155,11 +100,6 @@ class FixedTargets_Env_v2(FixedTargetsSokobanEnv):
 
 
 class FixedTargets_Env_v3(FixedTargetsSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (7, 7))
         kwargs['max_steps'] = kwargs.get('max_steps', 150)
@@ -169,11 +109,6 @@ class FixedTargets_Env_v3(FixedTargetsSokobanEnv):
 
 
 class PushAndPull_Env_v0(PushAndPullSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (10, 10))
         kwargs['max_steps'] = kwargs.get('max_steps', 150)
@@ -183,11 +118,6 @@ class PushAndPull_Env_v0(PushAndPullSokobanEnv):
 
 
 class PushAndPull_Env_v1(PushAndPullSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (10, 10))
         kwargs['max_steps'] = kwargs.get('max_steps', 150)
@@ -197,11 +127,6 @@ class PushAndPull_Env_v1(PushAndPullSokobanEnv):
 
 
 class PushAndPull_Env_v2(PushAndPullSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (7, 7))
         kwargs['max_steps'] = kwargs.get('max_steps', 150)
@@ -211,11 +136,6 @@ class PushAndPull_Env_v2(PushAndPullSokobanEnv):
 
 
 class PushAndPull_Env_v3(PushAndPullSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (7, 7))
         kwargs['max_steps'] = kwargs.get('max_steps', 150)
@@ -225,11 +145,6 @@ class PushAndPull_Env_v3(PushAndPullSokobanEnv):
 
 
 class PushAndPull_Env_v4(PushAndPullSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (13, 11))
         kwargs['max_steps'] = kwargs.get('max_steps', 300)
@@ -239,11 +154,6 @@ class PushAndPull_Env_v4(PushAndPullSokobanEnv):
 
 
 class PushAndPull_Env_v5(PushAndPullSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (13, 11))
         kwargs['max_steps'] = kwargs.get('max_steps', 300)
@@ -253,11 +163,6 @@ class PushAndPull_Env_v5(PushAndPullSokobanEnv):
 
 
 class TwoPlayer_Env0(TwoPlayerSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (7, 7))
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
@@ -266,11 +171,6 @@ class TwoPlayer_Env0(TwoPlayerSokobanEnv):
 
 
 class TwoPlayer_Env1(TwoPlayerSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (7, 7))
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
@@ -279,11 +179,6 @@ class TwoPlayer_Env1(TwoPlayerSokobanEnv):
 
 
 class TwoPlayer_Env2(TwoPlayerSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (10, 10))
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
@@ -292,11 +187,6 @@ class TwoPlayer_Env2(TwoPlayerSokobanEnv):
 
 
 class TwoPlayer_Env3(TwoPlayerSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (10, 10))
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
@@ -305,11 +195,6 @@ class TwoPlayer_Env3(TwoPlayerSokobanEnv):
 
 
 class TwoPlayer_Env4(TwoPlayerSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (13, 11))
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
@@ -319,11 +204,6 @@ class TwoPlayer_Env4(TwoPlayerSokobanEnv):
 
 
 class TwoPlayer_Env5(TwoPlayerSokobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['dim_room'] = kwargs.get('dim_room', (13, 11))
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
@@ -331,11 +211,6 @@ class TwoPlayer_Env5(TwoPlayerSokobanEnv):
         super(TwoPlayer_Env5, self).__init__(**kwargs)
 
 class Boxban_Env0(BoxobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
         kwargs['difficulty'] = kwargs.get('difficulty', 'unfiltered')
@@ -343,11 +218,6 @@ class Boxban_Env0(BoxobanEnv):
         super(Boxban_Env0, self).__init__(**kwargs)
 
 class Boxban_Env0_val(BoxobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
         kwargs['difficulty'] = kwargs.get('difficulty', 'unfiltered')
@@ -355,11 +225,6 @@ class Boxban_Env0_val(BoxobanEnv):
         super(Boxban_Env0_val, self).__init__(**kwargs)
 
 class Boxban_Env0_test(BoxobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
         kwargs['difficulty'] = kwargs.get('difficulty', 'unfiltered')
@@ -367,22 +232,12 @@ class Boxban_Env0_test(BoxobanEnv):
         super(Boxban_Env0_test, self).__init__(**kwargs)
 
 class Boxban_Env1(BoxobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
         kwargs['difficulty'] = kwargs.get('difficulty', 'medium')
         super(Boxban_Env1, self).__init__(**kwargs)
 
 class Boxban_Env1_val(BoxobanEnv):
-    metadata = {
-        'render.modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-        'render_modes': ['human', 'rgb_array', 'tiny_human', 'tiny_rgb_array'],
-    }
-
     def __init__(self, **kwargs):
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
         kwargs['difficulty'] = kwargs.get('difficulty', 'medium')

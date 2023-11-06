@@ -1,7 +1,7 @@
 from typing import Optional
 import numpy as np
 import pkg_resources
-import imageio
+import imageio.v3 as imageio
 
 
 _SURFACES_AND_DIMS: Optional[tuple[list, int]] = None

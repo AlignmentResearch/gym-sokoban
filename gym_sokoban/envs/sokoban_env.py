@@ -8,7 +8,7 @@ import numpy as np
 
 class SokobanEnv(gym.Env):
     metadata = {
-        'render_modes': ['rgb_array', 'tiny_rgb_array'],
+        'render_modes': ['rgb_array'],
         'render_fps': 4
     }
 
@@ -18,6 +18,7 @@ class SokobanEnv(gym.Env):
                  num_boxes=4,
                  num_gen_steps=None,
                  render_mode='rgb_array',
+                 tinyworld_obs=False,
                  reset=True):
 
         # General Configuration
@@ -45,7 +46,7 @@ class SokobanEnv(gym.Env):
 
         # Other Settings
         assert render_mode in self.metadata["render_modes"], f"Unknown Rendering Mode {render_mode}"
-        self.use_tiny_world = render_mode == "tiny_rgb_array"
+        self.use_tiny_world = tinyworld_obs
         self.viewer = None
         self.max_steps = max_steps
         self.action_space = Discrete(len(ACTION_LOOKUP))
