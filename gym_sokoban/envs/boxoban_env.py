@@ -10,20 +10,19 @@ import random
 import numpy as np
 
 class BoxobanEnv(SokobanEnv):
+    # These are fixed because they come from the data files
     num_boxes = 4
-    dim_room=(10, 10)
+    dim_room = (10, 10)
 
-    def __init__(self,
-             max_steps=120,
-             difficulty='unfiltered', split='train'):
+    def __init__(self, max_steps=120, difficulty='unfiltered', split='train', cache_path=".sokoban_cache", render_mode="rgb_array"):
         self.difficulty = difficulty
         self.split = split
         self.verbose = False
-        super(BoxobanEnv, self).__init__(self.dim_room, max_steps, self.num_boxes, None)
+        self.cache_path = cache_path
+        super(BoxobanEnv, self).__init__(dim_room=self.dim_room, max_steps=max_steps, num_boxes=self.num_boxes, render_mode=render_mode)
         
 
     def reset(self, seed=None):
-        self.cache_path = '.sokoban_cache'
         self.train_data_dir = os.path.join(self.cache_path, 'boxoban-levels-master', self.difficulty, self.split)
 
         if not os.path.exists(self.cache_path):

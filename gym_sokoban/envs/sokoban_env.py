@@ -7,21 +7,18 @@ from .render_utils import room_to_rgb, room_to_tiny_world_rgb
 import numpy as np
 
 class SokobanEnv(gym.Env):
+    metadata = {
+        'render_modes': ['rgb_array', 'tiny_rgb_array'],
+        'render_fps': 4
+    }
 
     def __init__(self,
                  dim_room=(10, 10),
-                 scale=10,
                  max_steps=120,
                  num_boxes=4,
-                 use_tiny_world=False,
                  num_gen_steps=None,
                  render_mode='rgb_array',
                  reset=True):
-
-        self.metadata = {
-            'render_modes': ['rgb_array'],
-            'render_fps': 4
-        }
 
         # General Configuration
         self.dim_room = dim_room
@@ -34,9 +31,7 @@ class SokobanEnv(gym.Env):
         self.boxes_on_target = 0
 
         # Rendering variables
-        self.scale = scale
         self.render_mode = render_mode
-        self.screen_size = (500, 500)
 
         self.window = None
         self.clock = None
@@ -49,11 +44,13 @@ class SokobanEnv(gym.Env):
         self.reward_last = 0
 
         # Other Settings
-        self.use_tiny_world = use_tiny_world
+        assert render_mode in self.metadata["render_modes"], f"Unknown Rendering Mode {render_mode}"
+        self.use_tiny_world = render_mode == "tiny_rgb_array"
         self.viewer = None
         self.max_steps = max_steps
         self.action_space = Discrete(len(ACTION_LOOKUP))
-        screen_height, screen_width = (dim_room[0] * 16, dim_room[1] * 16)
+        sprite_sz = 16 if render_mode == "rgb_array" else 1
+        screen_height, screen_width = (dim_room[0] * sprite_sz, dim_room[1] * sprite_sz)
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
         
         if reset:
@@ -64,9 +61,8 @@ class SokobanEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def step(self, action, observation_mode='rgb_array'):
+    def step(self, action):
         assert isinstance(action, int) or action.shape == ()
-        assert observation_mode in ['rgb_array', 'tiny_rgb_array', 'raw']
 
         self.num_env_steps += 1
 
@@ -90,7 +86,7 @@ class SokobanEnv(gym.Env):
         done = self._check_if_done()
 
         # Convert the observation to RGB frame
-        observation = self.get_image(self.scale)
+        observation = self.get_image()
 
         info = {
             "action.moved_player": moved_player,
@@ -232,21 +228,15 @@ class SokobanEnv(gym.Env):
         return starting_observation, {}
 
     def render(self):
-        img = self.get_image(self.scale)
-
-        # repeat to scale up
-        img = np.repeat(img, self.scale, axis=0)
-        img = np.repeat(img, self.scale, axis=1)
-
+        img = self.get_image(use_tiny_world=False)
         return img
 
-    def get_image(self, scale=1):
-        
-        if self.use_tiny_world:
+    def get_image(self, use_tiny_world: bool | None = None):
+        use_tiny_world = (self.use_tiny_world if use_tiny_world is None else use_tiny_world)
+        if use_tiny_world:
             img = room_to_tiny_world_rgb(self.room_state, self.room_fixed)
         else:
             img = room_to_rgb(self.room_state, self.room_fixed)
-
         return img
 
     def close(self):
