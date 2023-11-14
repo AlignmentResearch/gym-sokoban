@@ -19,6 +19,7 @@ class SokobanEnv(gym.Env):
                  num_gen_steps=None,
                  render_mode='rgb_array',
                  tinyworld_obs=False,
+                 tinyworld_render=False,
                  reset=True):
 
         # General Configuration
@@ -33,6 +34,7 @@ class SokobanEnv(gym.Env):
 
         # Rendering variables
         self.render_mode = render_mode
+        self.tinyworld_render = tinyworld_render
 
         self.window = None
         self.clock = None
@@ -229,7 +231,7 @@ class SokobanEnv(gym.Env):
         return starting_observation, {}
 
     def render(self):
-        img = self.get_image(use_tiny_world=False)
+        img = self.get_image(use_tiny_world=self.tinyworld_render)
         return img
 
     def get_image(self, use_tiny_world: bool | None = None):
