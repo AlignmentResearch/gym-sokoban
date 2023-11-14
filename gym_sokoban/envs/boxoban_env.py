@@ -14,12 +14,28 @@ class BoxobanEnv(SokobanEnv):
     num_boxes = 4
     dim_room = (10, 10)
 
-    def __init__(self, max_steps=120, difficulty='unfiltered', split='train', cache_path=".sokoban_cache", render_mode="rgb_array", tinyworld_obs=False):
+    def __init__(
+        self,
+        max_steps=120,
+        difficulty="unfiltered",
+        split="train",
+        cache_path=".sokoban_cache",
+        render_mode="rgb_array",
+        tinyworld_obs=False,
+        tinyworld_render=False,
+    ):
         self.difficulty = difficulty
         self.split = split
         self.verbose = False
         self.cache_path = cache_path
-        super(BoxobanEnv, self).__init__(dim_room=self.dim_room, max_steps=max_steps, num_boxes=self.num_boxes, render_mode=render_mode, tinyworld_obs=tinyworld_obs)
+        super(BoxobanEnv, self).__init__(
+            dim_room=self.dim_room,
+            max_steps=max_steps,
+            num_boxes=self.num_boxes,
+            render_mode=render_mode,
+            tinyworld_obs=tinyworld_obs,
+            tinyworld_render=tinyworld_render,
+        )
         
 
     def reset(self, options={}, seed=None):
