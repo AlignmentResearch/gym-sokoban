@@ -62,14 +62,13 @@ class BoxobanEnv(SokobanEnv):
 
         return starting_observation, {}
 
-    def select_room(self, seed=None):
-        
+    def select_map(self, seed=None):
         generated_files = [f for f in listdir(self.train_data_dir) if isfile(join(self.train_data_dir, f))]
         source_file = join(self.train_data_dir, random.choice(generated_files))
 
         maps = []
         current_map = []
-        
+
         with open(source_file, 'r') as sf:
             for line in sf.readlines():
                 if ';' in line and current_map:
@@ -77,7 +76,7 @@ class BoxobanEnv(SokobanEnv):
                     current_map = []
                 if '#' == line[0]:
                     current_map.append(line.strip())
-        
+
         maps.append(current_map)
 
         if seed is not None:
@@ -86,7 +85,11 @@ class BoxobanEnv(SokobanEnv):
 
         if self.verbose:
             print('Selected Level from File "{}"'.format(source_file))
+        return selected_map
 
+
+    def select_room(self, seed=None):
+        selected_map = self.select_map(seed=seed)
         self.room_fixed, self.room_state, self.box_mapping = self.generate_room(selected_map)
 
 
@@ -140,5 +143,6 @@ class BoxobanEnv(SokobanEnv):
 
 class FixedBoxobanEnv(BoxobanEnv):
     def select_room(self, seed=None) -> None:
-        if not hasattr(self, "room_fixed"):
-            super().select_room(seed)
+        if not hasattr(self, "selected_map"):
+            self.selected_map = self.select_map(seed=seed)
+        self.room_fixed, self.room_state, self.box_mapping = self.generate_room(self.selected_map)
