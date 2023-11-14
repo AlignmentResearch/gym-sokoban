@@ -136,3 +136,9 @@ class BoxobanEnv(SokobanEnv):
 
 
 
+
+
+class FixedBoxobanEnv(BoxobanEnv):
+    def select_room(self, seed=None) -> None:
+        if not hasattr(self, "room_fixed"):
+            super().select_room(seed)

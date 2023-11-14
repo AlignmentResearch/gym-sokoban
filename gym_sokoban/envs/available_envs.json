@@ -101,22 +101,42 @@
   },
   {
     "id": "Boxoban-Train-v0",
-    "entry_point": "gym_sokoban.envs:Boxban_Env0"
+    "entry_point": "gym_sokoban.envs:Boxoban_Env0"
   },
   {
     "id": "Boxoban-Test-v0",
-    "entry_point": "gym_sokoban.envs:Boxban_Env0_test"
+    "entry_point": "gym_sokoban.envs:Boxoban_Env0_test"
   },
   {
     "id": "Boxoban-Val-v0",
-    "entry_point": "gym_sokoban.envs:Boxban_Env0_val"
+    "entry_point": "gym_sokoban.envs:Boxoban_Env0_val"
   },
   {
     "id": "Boxoban-Train-v1",
-    "entry_point": "gym_sokoban.envs:Boxban_Env1"
+    "entry_point": "gym_sokoban.envs:Boxoban_Env1"
   },
   {
     "id": "Boxoban-Val-v1",
-    "entry_point": "gym_sokoban.envs:Boxban_Env1_val"
+    "entry_point": "gym_sokoban.envs:Boxoban_Env1_val"
+  },
+  {
+    "id": "FixedBoxoban-Train-v0",
+    "entry_point": "gym_sokoban.envs:FixedBoxoban_Env0"
+  },
+  {
+    "id": "FixedBoxoban-Test-v0",
+    "entry_point": "gym_sokoban.envs:FixedBoxoban_Env0_test"
+  },
+  {
+    "id": "FixedBoxoban-Val-v0",
+    "entry_point": "gym_sokoban.envs:FixedBoxoban_Env0_val"
+  },
+  {
+    "id": "FixedBoxoban-Train-v1",
+    "entry_point": "gym_sokoban.envs:FixedBoxoban_Env1"
+  },
+  {
+    "id": "FixedBoxoban-Val-v1",
+    "entry_point": "gym_sokoban.envs:FixedBoxoban_Env1_val"
   }
 ]

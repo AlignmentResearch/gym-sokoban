@@ -2,7 +2,7 @@ from .sokoban_env import SokobanEnv
 from .sokoban_env_fixed_targets import FixedTargetsSokobanEnv
 from .sokoban_env_pull import PushAndPullSokobanEnv
 from .sokoban_env_two_player import TwoPlayerSokobanEnv
-from .boxoban_env import BoxobanEnv
+from .boxoban_env import BoxobanEnv, FixedBoxobanEnv
 
 
 class SokobanEnv1(SokobanEnv):
@@ -210,36 +210,70 @@ class TwoPlayer_Env5(TwoPlayerSokobanEnv):
         kwargs['num_boxes'] = kwargs.get('num_boxes', 4)
         super(TwoPlayer_Env5, self).__init__(**kwargs)
 
-class Boxban_Env0(BoxobanEnv):
+class Boxoban_Env0(BoxobanEnv):
     def __init__(self, **kwargs):
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
         kwargs['difficulty'] = kwargs.get('difficulty', 'unfiltered')
         kwargs['split'] = kwargs.get('split', 'train')
-        super(Boxban_Env0, self).__init__(**kwargs)
+        super(Boxoban_Env0, self).__init__(**kwargs)
 
-class Boxban_Env0_val(BoxobanEnv):
+class Boxoban_Env0_val(BoxobanEnv):
     def __init__(self, **kwargs):
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
         kwargs['difficulty'] = kwargs.get('difficulty', 'unfiltered')
         kwargs['split'] = kwargs.get('split', 'valid')
-        super(Boxban_Env0_val, self).__init__(**kwargs)
+        super(Boxoban_Env0_val, self).__init__(**kwargs)
 
-class Boxban_Env0_test(BoxobanEnv):
+class Boxoban_Env0_test(BoxobanEnv):
     def __init__(self, **kwargs):
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
         kwargs['difficulty'] = kwargs.get('difficulty', 'unfiltered')
         kwargs['split'] = kwargs.get('split', 'test')
-        super(Boxban_Env0_test, self).__init__(**kwargs)
+        super(Boxoban_Env0_test, self).__init__(**kwargs)
 
-class Boxban_Env1(BoxobanEnv):
+class Boxoban_Env1(BoxobanEnv):
     def __init__(self, **kwargs):
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
         kwargs['difficulty'] = kwargs.get('difficulty', 'medium')
-        super(Boxban_Env1, self).__init__(**kwargs)
+        super(Boxoban_Env1, self).__init__(**kwargs)
 
-class Boxban_Env1_val(BoxobanEnv):
+class Boxoban_Env1_val(BoxobanEnv):
     def __init__(self, **kwargs):
         kwargs['max_steps'] = kwargs.get('max_steps', 200)
         kwargs['difficulty'] = kwargs.get('difficulty', 'medium')
         kwargs['split'] = kwargs.get('split', 'valid')
-        super(Boxban_Env1_val, self).__init__(**kwargs)
+        super(Boxoban_Env1_val, self).__init__(**kwargs)
+
+class FixedBoxoban_Env0(FixedBoxobanEnv):
+    def __init__(self, **kwargs):
+        kwargs['max_steps'] = kwargs.get('max_steps', 200)
+        kwargs['difficulty'] = kwargs.get('difficulty', 'unfiltered')
+        kwargs['split'] = kwargs.get('split', 'train')
+        super(FixedBoxoban_Env0, self).__init__(**kwargs)
+
+class FixedBoxoban_Env0_val(FixedBoxobanEnv):
+    def __init__(self, **kwargs):
+        kwargs['max_steps'] = kwargs.get('max_steps', 200)
+        kwargs['difficulty'] = kwargs.get('difficulty', 'unfiltered')
+        kwargs['split'] = kwargs.get('split', 'valid')
+        super(FixedBoxoban_Env0_val, self).__init__(**kwargs)
+
+class FixedBoxoban_Env0_test(FixedBoxobanEnv):
+    def __init__(self, **kwargs):
+        kwargs['max_steps'] = kwargs.get('max_steps', 200)
+        kwargs['difficulty'] = kwargs.get('difficulty', 'unfiltered')
+        kwargs['split'] = kwargs.get('split', 'test')
+        super(FixedBoxoban_Env0_test, self).__init__(**kwargs)
+
+class FixedBoxoban_Env1(FixedBoxobanEnv):
+    def __init__(self, **kwargs):
+        kwargs['max_steps'] = kwargs.get('max_steps', 200)
+        kwargs['difficulty'] = kwargs.get('difficulty', 'medium')
+        super(FixedBoxoban_Env1, self).__init__(**kwargs)
+
+class FixedBoxoban_Env1_val(FixedBoxobanEnv):
+    def __init__(self, **kwargs):
+        kwargs['max_steps'] = kwargs.get('max_steps', 200)
+        kwargs['difficulty'] = kwargs.get('difficulty', 'medium')
+        kwargs['split'] = kwargs.get('split', 'valid')
+        super(FixedBoxoban_Env1_val, self).__init__(**kwargs)
