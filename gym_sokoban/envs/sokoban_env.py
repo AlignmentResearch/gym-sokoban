@@ -20,7 +20,10 @@ class SokobanEnv(gym.Env):
                  render_mode='rgb_array',
                  tinyworld_obs=False,
                  tinyworld_render=False,
-                 reset=True):
+                 reset=True,
+                 terminate_on_first_box=False,
+                ):
+        self.terminate_on_first_box = terminate_on_first_box
 
         # General Configuration
         self.dim_room = dim_room
@@ -198,7 +201,9 @@ class SokobanEnv(gym.Env):
     def _check_if_done(self):
         # Check if the game is over either through reaching the maximum number
         # of available steps or by pushing all boxes on the targets.        
-        return self._check_if_all_boxes_on_target() or self._check_if_maxsteps()
+        return ((self.terminate_on_first_box and self.boxes_on_target > 0)
+                or self._check_if_all_boxes_on_target()
+                or self._check_if_maxsteps())
 
     def _check_if_all_boxes_on_target(self):
         empty_targets = self.room_state == 2

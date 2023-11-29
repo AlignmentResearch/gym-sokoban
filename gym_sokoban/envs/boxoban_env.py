@@ -23,6 +23,7 @@ class BoxobanEnv(SokobanEnv):
         render_mode="rgb_array",
         tinyworld_obs=False,
         tinyworld_render=False,
+        terminate_on_first_box=False,
     ):
         self.difficulty = difficulty
         self.split = split
@@ -35,6 +36,7 @@ class BoxobanEnv(SokobanEnv):
             render_mode=render_mode,
             tinyworld_obs=tinyworld_obs,
             tinyworld_render=tinyworld_render,
+            terminate_on_first_box=terminate_on_first_box,
         )
         
 
