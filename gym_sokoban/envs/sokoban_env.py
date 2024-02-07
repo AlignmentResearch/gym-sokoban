@@ -22,6 +22,7 @@ class SokobanEnv(gym.Env):
                  tinyworld_render=False,
                  reset=True,
                  terminate_on_first_box=False,
+                 reset_seed = None,
                 ):
         self.terminate_on_first_box = terminate_on_first_box
 
@@ -58,10 +59,11 @@ class SokobanEnv(gym.Env):
         sprite_sz = 1 if self.use_tiny_world else 16
         screen_height, screen_width = (dim_room[0] * sprite_sz, dim_room[1] * sprite_sz)
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
-        
+
+        self.seed(reset_seed)
         if reset:
             # Initialize Room
-            _ = self.reset(None)
+            _ = self.reset(reset_seed)
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)

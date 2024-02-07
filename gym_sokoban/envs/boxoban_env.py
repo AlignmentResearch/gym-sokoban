@@ -24,6 +24,7 @@ class BoxobanEnv(SokobanEnv):
         tinyworld_obs=False,
         tinyworld_render=False,
         terminate_on_first_box=False,
+        reset_seed=None,
     ):
         self.difficulty = difficulty
         self.split = split
@@ -37,10 +38,11 @@ class BoxobanEnv(SokobanEnv):
             tinyworld_obs=tinyworld_obs,
             tinyworld_render=tinyworld_render,
             terminate_on_first_box=terminate_on_first_box,
+            reset_seed=reset_seed
         )
         
 
-    def reset(self, options={}, seed=None):
+    def reset(self, seed=None, options={}):
         if self.difficulty == 'hard':
             # Hard has no splits
             self.train_data_dir = os.path.join(self.cache_path, 'boxoban-levels-master', self.difficulty)
