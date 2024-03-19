@@ -5,12 +5,21 @@ from gymnasium.spaces import Box
 from .room_utils import generate_room
 from .render_utils import room_to_rgb, room_to_tiny_world_rgb
 import numpy as np
+from pathlib import Path
 
 class SokobanEnv(gym.Env):
     metadata = {
         'render_modes': ['rgb_array'],
         'render_fps': 4
     }
+    kWall = 0
+    kEmpty = 1
+    kTarget = 2
+    kBoxOnTarget = 3
+    kBox = 4
+    kPlayer = 5
+    kPlayerOnTarget = 6
+    kPrintLevelKey = "# .s$@a"
 
     def __init__(self,
                  dim_room=(10, 10),
@@ -23,6 +32,10 @@ class SokobanEnv(gym.Env):
                  reset=True,
                  terminate_on_first_box=False,
                  reset_seed = None,
+                 levels_dir=None,
+                 load_sequentially=False,
+                 n_levels_to_load=-1,
+                 verbose=0
                 ):
         self.terminate_on_first_box = terminate_on_first_box
 
@@ -61,6 +74,24 @@ class SokobanEnv(gym.Env):
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
 
         self.seed(reset_seed)
+        self.load_sequentially = load_sequentially
+        self.verbose = verbose
+        self.n_levels_to_load = n_levels_to_load
+        if self.n_levels_to_load > 0 or self.load_sequentially:
+            assert levels_dir is not None, "Levels directory must be specified if n_levels_to_load > 0 or load_sequentially"
+        self.levels_dir = levels_dir
+        if self.levels_dir is not None:
+            self.levels_dir = Path(self.levels_dir)
+            assert self.levels_dir.is_dir(), f"Levels directory {self.levels_dir} is not a directory"
+            self.level_files = np.array(list(self.levels_dir.glob("*.txt")))
+            assert len(self.level_files) > 0, f"Levels directory {self.levels_dir} does not contain any .txt files"
+            self.level_files.sort()
+            if not self.load_sequentially:
+                self.level_file_shuffle_order = self.np_random.permutation(len(self.level_files))
+                self.level_files = self.level_files[self.level_file_shuffle_order]
+            self.level_file_idx = -1
+            self.level_idx = -1
+            self.levels = []
         if reset:
             # Initialize Room
             _ = self.reset(reset_seed)
@@ -82,7 +113,7 @@ class SokobanEnv(gym.Env):
         if action == 0:
             moved_player = False
 
-        # All push actions are in the range of [0, 3]
+        # All push actions are in the range of [0, 4]
         elif action < 5:
             moved_player, moved_box = self._push(action)
 
@@ -103,7 +134,6 @@ class SokobanEnv(gym.Env):
         if done:
             info["maxsteps_used"] = self._check_if_maxsteps()
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
-
         return observation, self.reward_last, done, False, info
 
     def _push(self, action):
@@ -202,7 +232,7 @@ class SokobanEnv(gym.Env):
 
     def _check_if_done(self):
         # Check if the game is over either through reaching the maximum number
-        # of available steps or by pushing all boxes on the targets.        
+        # of available steps or by pushing all boxes on the targets.
         return ((self.terminate_on_first_box and self.boxes_on_target > 0)
                 or self._check_if_all_boxes_on_target()
                 or self._check_if_maxsteps())
@@ -216,18 +246,116 @@ class SokobanEnv(gym.Env):
     def _check_if_maxsteps(self):
         return (self.max_steps == self.num_env_steps)
 
+    def print_level(self, level: np.ndarray):
+        dim_room = level.shape[0]
+        if dim_room == 0:
+            raise RuntimeError("dim_room cannot be zero.")
+        for r in range(len(level)):
+            for c in range(len(level[r])):
+                print(self.kPrintLevelKey[level[r, c]], end='')
+            print()
+
+    def add_line(self, level: np.ndarray, row_num: int, line: str):
+        start = line[0]
+        end = line[-1]
+        if start != '#' or end != '#':
+            raise RuntimeError(f"Line '{line}' does not start ({start}) and end ({end}) with '#', as it should.")
+
+        for col_num, r in enumerate(line):
+            if r == '#':
+                level[row_num, col_num] = self.kWall
+            elif r == '@':
+                level[row_num, col_num] = self.kPlayer
+            elif r == '$':
+                level[row_num, col_num] = self.kBox
+            elif r == '.':
+                level[row_num, col_num] = self.kTarget
+            elif r == ' ':
+                level[row_num, col_num] = self.kEmpty
+            else:
+                raise RuntimeError(f"Line '{line}' has character '{r}' which is not in the valid set '#@$. '.")
+
+    def load_level_file(self, file_path):
+        print("loading new file:", file_path)
+        assert self.level_idx >= len(self.levels), f"Level index {self.level_idx} is not at the end of levels list {len(self.levels)}"
+        self.levels = []
+        with open(file_path, 'r') as file:
+            cur_level = []
+            for line in file:
+                line = line.strip()
+                if line == '':
+                    continue
+                if line[0] == '#':
+                    # Count contiguous '#' characters and use this as the box dimension
+                    dim_room = line.count('#')
+                    assert dim_room == self.dim_room[0] == self.dim_room[1], f"Level dimension {dim_room} does not match dim_room={self.dim_room}"
+                    cur_level = np.zeros((dim_room, dim_room), dtype=np.int8)
+                    row_num = 0
+                    self.add_line(cur_level, row_num, line)
+
+                    for line in file:
+                        line = line.strip()
+                        if line == '' or line[0] != '#':
+                            break
+                        if len(line) != dim_room:
+                            raise RuntimeError(f"Irregular line '{line}' does not match dim_room={dim_room}")
+                        row_num += 1
+                        self.add_line(cur_level, row_num, line)
+
+                    if cur_level.shape[0] != dim_room or cur_level.shape[1] != dim_room:
+                        raise RuntimeError(f"Room is not square: {len(cur_level)} != {dim_room}x{dim_room}")
+                    self.levels.append(cur_level)
+
+            self.levels = np.array(self.levels)
+            if not self.load_sequentially:
+                self.levels_shuffle_order = self.np_random.permutation(len(self.levels))
+                self.levels = self.levels[self.levels_shuffle_order]
+            if len(self.levels) == 0:
+                raise RuntimeError(f"No levels loaded from file '{file_path}'")
+
+            if self.verbose >= 1:
+                print(f"***Loaded {len(self.levels)} levels from {file_path}")
+                if self.verbose >= 2:
+                    self.print_level(self.levels[0])
+                    print()
+                    self.print_level(self.levels[1])
+                    print()
+
+
     def reset(self, seed=None, options={}, second_player=False, render_mode='rgb_array'):
-        try:
-            self.room_fixed, self.room_state, self.box_mapping = generate_room(
-                dim=self.dim_room,
-                num_steps=self.num_gen_steps,
-                num_boxes=self.num_boxes,
-                second_player=second_player
-            )
-        except (RuntimeError, RuntimeWarning) as e:
-            print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
-            print("[SOKOBAN] Retry . . .")
-            return self.reset(seed, second_player=second_player, render_mode=render_mode)
+        if self.levels_dir is not None:
+            self.level_idx += 1
+            if self.level_idx >= len(self.levels):
+                self.level_file_idx += 1
+                if self.level_file_idx >= len(self.level_files):
+                    if not self.load_sequentially:
+                        # after every full pass through the levels, reshuffle them
+                        self.level_files.sort()
+                        self.level_file_shuffle_order = self.np_random.permutation(len(self.level_files))
+                        self.level_files = self.level_files[self.level_file_shuffle_order]
+                    self.level_file_idx = 0
+                print(self.level_idx, self.level_file_idx)
+                level_file = self.level_files[self.level_file_idx]
+                self.load_level_file(level_file)
+                self.level_idx = 0
+                
+            self.room_state = self.levels[self.level_idx]
+            self.room_fixed = self.room_state.copy()
+            self.room_fixed[self.room_fixed == self.kBox] = self.kEmpty
+            self.room_fixed[self.room_fixed == self.kPlayer] = self.kEmpty
+            self.box_mapping = None
+        else:
+            try:
+                self.room_fixed, self.room_state, self.box_mapping = generate_room(
+                    dim=self.dim_room,
+                    num_steps=self.num_gen_steps,
+                    num_boxes=self.num_boxes,
+                    second_player=second_player
+                )
+            except (RuntimeError, RuntimeWarning) as e:
+                print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
+                print("[SOKOBAN] Retry . . .")
+                return self.reset(seed, second_player=second_player, render_mode=render_mode)
 
         self.player_position = np.argwhere(self.room_state == 5)[0]
         self.num_env_steps = 0
