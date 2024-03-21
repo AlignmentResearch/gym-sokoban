@@ -103,6 +103,8 @@ class SokobanEnv(gym.Env):
         if done:
             info["maxsteps_used"] = self._check_if_maxsteps()
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
+            info["is_success"] = info["all_boxes_on_target"] or \
+                ((self.terminate_on_first_box and self.boxes_on_target > 0))
 
         return observation, self.reward_last, done, False, info
 
