@@ -70,6 +70,7 @@ class BoxobanEnv(SokobanEnv):
             zip_ref = zipfile.ZipFile(path_to_zip_file, 'r')
             zip_ref.extractall(self.cache_path)
             zip_ref.close()
+        self.level_files = [f for f in sorted(listdir(self.train_data_dir)) if isfile(join(self.train_data_dir, f))]
 
     def reset(self, seed=None, options=None):
         self.select_room(seed=seed, **(options or {}))
@@ -84,10 +85,9 @@ class BoxobanEnv(SokobanEnv):
 
     def select_map(self, level_file_idx=None, level_idx=None, seed=None):
         assert (level_file_idx is None) == (level_idx is None), "Both level_file_idx and level_idx must be provided together or not at all"
-        generated_files = [f for f in sorted(listdir(self.train_data_dir)) if isfile(join(self.train_data_dir, f))]
         if level_file_idx is None:
-            level_file_idx = random.randint(0, len(generated_files) - 1)
-        source_file = join(self.train_data_dir, generated_files[level_file_idx])
+            level_file_idx = random.randint(0, len(self.level_files) - 1)
+        source_file = join(self.train_data_dir, self.level_files[level_file_idx])
 
         maps = []
         current_map = []
@@ -109,7 +109,7 @@ class BoxobanEnv(SokobanEnv):
         selected_map = maps[level_idx]
 
         if self.verbose:
-            print(f'Selected Level {level_idx} from File "{generated_files[level_file_idx]}"')
+            print(f'Selected Level {level_idx} from File "{self.level_files[level_file_idx]}"')
         return selected_map
 
     def select_room(self, level_file_idx=None, level_idx=None, seed=None) -> None:
