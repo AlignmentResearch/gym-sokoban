@@ -31,17 +31,6 @@ class BoxobanEnv(SokobanEnv):
         self.split = split
         self.verbose = False
         self.cache_path = cache_path
-        super(BoxobanEnv, self).__init__(
-            dim_room=self.dim_room,
-            max_steps=max_steps,
-            num_boxes=self.num_boxes,
-            render_mode=render_mode,
-            tinyworld_obs=tinyworld_obs,
-            tinyworld_render=tinyworld_render,
-            terminate_on_first_box=terminate_on_first_box,
-            reset_seed=reset_seed,
-            reset=reset,
-        )
         if self.difficulty == 'hard':
             # Hard has no splits
             self.train_data_dir = os.path.join(self.cache_path, 'boxoban-levels-master', self.difficulty)
@@ -71,6 +60,17 @@ class BoxobanEnv(SokobanEnv):
             zip_ref.extractall(self.cache_path)
             zip_ref.close()
         self.level_files = [f for f in sorted(listdir(self.train_data_dir)) if isfile(join(self.train_data_dir, f))]
+        super(BoxobanEnv, self).__init__(
+            dim_room=self.dim_room,
+            max_steps=max_steps,
+            num_boxes=self.num_boxes,
+            render_mode=render_mode,
+            tinyworld_obs=tinyworld_obs,
+            tinyworld_render=tinyworld_render,
+            terminate_on_first_box=terminate_on_first_box,
+            reset_seed=reset_seed,
+            reset=reset,
+        )
 
     def reset(self, seed=None, options=None):
         self.select_room(seed=seed, **(options or {}))
