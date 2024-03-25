@@ -102,8 +102,8 @@ class BoxobanEnv(SokobanEnv):
 
         maps.append(current_map)
 
-        # if seed is not None:
-        #     random.seed(seed)
+        if seed is not None:
+            random.seed(seed)
         if level_idx is None:
             level_idx = random.randint(0, len(maps) - 1)
         selected_map = maps[level_idx]
