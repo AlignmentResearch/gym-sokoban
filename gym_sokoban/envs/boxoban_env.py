@@ -27,6 +27,10 @@ class BoxobanEnv(SokobanEnv):
         terminate_on_first_box=False,
         reset_seed=None,
         reset=False,
+        reward_finished = 10,
+        reward_box_on_target = 1,
+        penalty_box_off_target = -1,
+        penalty_for_step = -0.1,
     ):
         self.difficulty = difficulty
         self.split = split
@@ -81,6 +85,10 @@ class BoxobanEnv(SokobanEnv):
             terminate_on_first_box=terminate_on_first_box,
             reset_seed=reset_seed,
             reset=reset,
+            reward_finished=reward_finished,
+            reward_box_on_target=reward_box_on_target,
+            penalty_box_off_target=penalty_box_off_target,
+            penalty_for_step=penalty_for_step,
         )
 
     def reset(self, seed=None, options=None):

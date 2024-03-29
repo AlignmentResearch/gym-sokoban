@@ -13,17 +13,21 @@ class SokobanEnv(gym.Env):
     }
 
     def __init__(self,
-                 dim_room=(10, 10),
-                 max_steps=120,
-                 num_boxes=4,
-                 num_gen_steps=None,
-                 render_mode='rgb_array',
-                 tinyworld_obs=False,
-                 tinyworld_render=False,
-                 reset=True,
-                 terminate_on_first_box=False,
-                 reset_seed = None,
-                ):
+        dim_room=(10, 10),
+        max_steps=120,
+        num_boxes=4,
+        num_gen_steps=None,
+        render_mode='rgb_array',
+        tinyworld_obs=False,
+        tinyworld_render=False,
+        reset=True,
+        terminate_on_first_box=False,
+        reset_seed = None,
+        reward_finished = 10,
+        reward_box_on_target = 1,
+        penalty_box_off_target = -1,
+        penalty_for_step = -0.1,
+    ):
         self.terminate_on_first_box = terminate_on_first_box
 
         # General Configuration
@@ -44,10 +48,10 @@ class SokobanEnv(gym.Env):
         self.clock = None
 
         # Penalties and Rewards
-        self.penalty_for_step = -0.1
-        self.penalty_box_off_target = -1
-        self.reward_box_on_target = 1
-        self.reward_finished = 10
+        self.reward_finished = reward_finished
+        self.reward_box_on_target = reward_box_on_target
+        self.penalty_box_off_target = penalty_box_off_target
+        self.penalty_for_step = penalty_for_step
         self.reward_last = 0
 
         # Other Settings
