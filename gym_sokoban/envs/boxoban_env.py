@@ -59,7 +59,17 @@ class BoxobanEnv(SokobanEnv):
             zip_ref = zipfile.ZipFile(path_to_zip_file, 'r')
             zip_ref.extractall(self.cache_path)
             zip_ref.close()
-        self.level_files = [f for f in sorted(listdir(self.train_data_dir)) if isfile(join(self.train_data_dir, f))]
+        
+        def check_file_format(file_name):
+            if not isfile(join(self.train_data_dir, file_name)):
+                return False
+            try:
+                int(file_name.split('.')[0])
+                return file_name.endswith('.txt')
+            except:
+                return False
+
+        self.level_files = [f for f in sorted(listdir(self.train_data_dir)) if check_file_format(f)]
         super(BoxobanEnv, self).__init__(
             dim_room=self.dim_room,
             max_steps=max_steps,
