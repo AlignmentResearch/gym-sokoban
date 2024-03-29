@@ -8,6 +8,7 @@ import zipfile
 from tqdm import tqdm
 import random
 import numpy as np
+from pathlib import Path
 
 class BoxobanEnv(SokobanEnv):
     # These are fixed because they come from the data files
@@ -19,7 +20,7 @@ class BoxobanEnv(SokobanEnv):
         max_steps=120,
         difficulty="unfiltered",
         split="train",
-        cache_path=".sokoban_cache",
+        cache_path: str | Path = ".sokoban_cache",
         render_mode="rgb_array",
         tinyworld_obs=False,
         tinyworld_render=False,
