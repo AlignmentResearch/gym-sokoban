@@ -20,6 +20,7 @@ class SokobanEnv(gym.Env):
         render_mode='rgb_array',
         tinyworld_obs=False,
         tinyworld_render=False,
+        tinyworld_scale=8,
         reset=True,
         terminate_on_first_box=False,
         reset_seed = None,
@@ -43,6 +44,7 @@ class SokobanEnv(gym.Env):
         # Rendering variables
         self.render_mode = render_mode
         self.tinyworld_render = tinyworld_render
+        self.tinyworld_scale = tinyworld_scale
 
         self.window = None
         self.clock = None
@@ -60,7 +62,7 @@ class SokobanEnv(gym.Env):
         self.viewer = None
         self.max_steps = max_steps
         self.action_space = Discrete(len(ACTION_LOOKUP))
-        sprite_sz = 1 if self.use_tiny_world else 16
+        sprite_sz = self.tinyworld_scale if self.use_tiny_world else 16
         screen_height, screen_width = (dim_room[0] * sprite_sz, dim_room[1] * sprite_sz)
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
 
@@ -250,7 +252,7 @@ class SokobanEnv(gym.Env):
     def get_image(self, use_tiny_world: bool | None = None):
         use_tiny_world = (self.use_tiny_world if use_tiny_world is None else use_tiny_world)
         if use_tiny_world:
-            img = room_to_tiny_world_rgb(self.room_state, self.room_fixed)
+            img = room_to_tiny_world_rgb(self.room_state, self.room_fixed, self.tinyworld_scale)
         else:
             img = room_to_rgb(self.room_state, self.room_fixed)
         return img
