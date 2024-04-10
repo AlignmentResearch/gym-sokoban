@@ -20,7 +20,7 @@ class SokobanEnv(gym.Env):
         render_mode='rgb_array',
         tinyworld_obs=False,
         tinyworld_render=False,
-        tinyworld_scale=8,
+        tinyworld_scale=1,
         reset=True,
         terminate_on_first_box=False,
         reset_seed = None,
