@@ -30,6 +30,8 @@ class SokobanEnv(gym.Env):
         penalty_for_step = -0.1,
     ):
         self.min_episode_steps = min_episode_steps
+        if max_steps < self.min_episode_steps:
+            raise ValueError(f"{max_steps=} cannot be less than {min_episode_steps=}")
         self.terminate_on_first_box = terminate_on_first_box
 
         # General Configuration
@@ -65,6 +67,7 @@ class SokobanEnv(gym.Env):
         sprite_sz = 1 if self.use_tiny_world else 16
         screen_height, screen_width = (dim_room[0] * sprite_sz, dim_room[1] * sprite_sz)
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
+        self.this_episode_steps = max_steps
 
         self.seed(reset_seed)
         if reset:
