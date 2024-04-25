@@ -90,12 +90,7 @@ class SokobanEnv(gym.Env):
 
         moved_box = False
 
-        # All push actions are in the range of [0, 3]
-        if action < 5:
-            moved_player, moved_box = self._push(action)
-
-        else:
-            moved_player = self._move(action)
+        moved_player, moved_box = self._push(action)
 
         self._calc_reward()
         
@@ -123,7 +118,7 @@ class SokobanEnv(gym.Env):
         :param action:
         :return: Boolean, indicating a change of the room's state
         """
-        change = CHANGE_COORDINATES[(action) % 4]
+        change = CHANGE_COORDINATES[action]
         new_position = self.player_position + change
         current_position = self.player_position.copy()
 
@@ -136,49 +131,25 @@ class SokobanEnv(gym.Env):
 
         can_push_box = self.room_state[new_position[0], new_position[1]] in [3, 4]
         can_push_box &= self.room_state[new_box_position[0], new_box_position[1]] in [1, 2]
-        if can_push_box:
-
-            self.new_box_position = tuple(new_box_position)
-            self.old_box_position = tuple(new_position)
-
-            # Move Player
+        can_move = self.room_state[new_position[0], new_position[1]] in [1, 2]
+        can_move |= can_push_box
+        if can_move:
             self.player_position = new_position
             self.room_state[(new_position[0], new_position[1])] = 5
             self.room_state[current_position[0], current_position[1]] = \
                 self.room_fixed[current_position[0], current_position[1]]
+
+        if can_push_box:
+            self.new_box_position = tuple(new_box_position)
+            self.old_box_position = tuple(new_position)
 
             # Move Box
             box_type = 4
             if self.room_fixed[new_box_position[0], new_box_position[1]] == 2:
                 box_type = 3
             self.room_state[new_box_position[0], new_box_position[1]] = box_type
-            return True, True
+        return can_move, can_push_box
 
-        # Try to move if no box to push, available
-        else:
-            return self._move(action), False
-
-    def _move(self, action):
-        """
-        Moves the player to the next field, if it is not occupied.
-        :param action:
-        :return: Boolean, indicating a change of the room's state
-        """
-        change = CHANGE_COORDINATES[(action) % 4]
-        new_position = self.player_position + change
-        current_position = self.player_position.copy()
-
-        # Move player if the field in the moving direction is either
-        # an empty field or an empty box target.
-        if self.room_state[new_position[0], new_position[1]] in [1, 2]:
-            self.player_position = new_position
-            self.room_state[(new_position[0], new_position[1])] = 5
-            self.room_state[current_position[0], current_position[1]] = \
-                self.room_fixed[current_position[0], current_position[1]]
-
-            return True
-
-        return False
 
     def _calc_reward(self):
         """
