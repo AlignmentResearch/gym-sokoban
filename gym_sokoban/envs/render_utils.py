@@ -7,7 +7,7 @@ import imageio.v3 as imageio
 _SURFACES_AND_DIMS: Optional[tuple[list, int]] = None
 
 
-def get_surfaces_and_dims() -> tuple[list, int]:
+def get_surfaces_and_dims(is_8x8=False) -> tuple[list, int]:
     global _SURFACES_AND_DIMS
 
     if _SURFACES_AND_DIMS is not None:
@@ -16,47 +16,47 @@ def get_surfaces_and_dims() -> tuple[list, int]:
     resource_package = __name__
 
     # Load images, representing the corresponding situation
-    box_filename = pkg_resources.resource_filename(resource_package, '/'.join(('surface', 'box.png')))
+    base_stripe_dir = 'surface/8x8' if is_8x8 else 'surface'
+    box_filename = pkg_resources.resource_filename(resource_package, '/'.join((base_stripe_dir, 'box.png')))
     box = imageio.imread(box_filename)
 
     box_on_target_filename = pkg_resources.resource_filename(resource_package,
-                                                             '/'.join(('surface', 'box_on_target.png')))
+                                                             '/'.join((base_stripe_dir, 'box_on_target.png')))
     box_on_target = imageio.imread(box_on_target_filename)
 
-    box_target_filename = pkg_resources.resource_filename(resource_package, '/'.join(('surface', 'box_target.png')))
+    box_target_filename = pkg_resources.resource_filename(resource_package, '/'.join((base_stripe_dir, 'box_target.png')))
     box_target = imageio.imread(box_target_filename)
 
-    floor_filename = pkg_resources.resource_filename(resource_package, '/'.join(('surface', 'floor.png')))
+    floor_filename = pkg_resources.resource_filename(resource_package, '/'.join((base_stripe_dir, 'floor.png')))
     floor = imageio.imread(floor_filename)
 
-    player_filename = pkg_resources.resource_filename(resource_package, '/'.join(('surface', 'player.png')))
+    player_filename = pkg_resources.resource_filename(resource_package, '/'.join((base_stripe_dir, 'player.png')))
     player = imageio.imread(player_filename)
 
     player_on_target_filename = pkg_resources.resource_filename(resource_package,
-                                                                '/'.join(('surface', 'player_on_target.png')))
+                                                                '/'.join((base_stripe_dir, 'player_on_target.png')))
     player_on_target = imageio.imread(player_on_target_filename)
 
-    wall_filename = pkg_resources.resource_filename(resource_package, '/'.join(('surface', 'wall.png')))
+    wall_filename = pkg_resources.resource_filename(resource_package, '/'.join((base_stripe_dir, 'wall.png')))
     wall = imageio.imread(wall_filename)
 
     surfaces = [wall, floor, box_target, box_on_target, box, player, player_on_target]
 
     assert all(s.shape == wall.shape for s in surfaces), "All tiles must have the same shape"
-
     assert wall.shape[0] == wall.shape[1]
 
     _SURFACES_AND_DIMS = surfaces, wall.shape[0]
     return _SURFACES_AND_DIMS
 
 
-def room_to_rgb(room, room_structure=None):
+def room_to_rgb(room, room_structure=None, is_8x8=False):
     """
     Creates an RGB image of the room.
     :param room:
     :param room_structure:
     :return:
     """
-    surfaces, size = get_surfaces_and_dims()
+    surfaces, size = get_surfaces_and_dims(is_8x8=is_8x8)
 
     room = np.array(room)
     if not room_structure is None:

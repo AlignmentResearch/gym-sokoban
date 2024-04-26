@@ -8,7 +8,7 @@ import numpy as np
 
 class SokobanEnv(gym.Env):
     metadata = {
-        'render_modes': ['rgb_array'],
+        'render_modes': ['rgb_array', "rgb_8x8"],
         'render_fps': 4
     }
 
@@ -21,6 +21,7 @@ class SokobanEnv(gym.Env):
         render_mode='rgb_array',
         tinyworld_obs=False,
         tinyworld_render=False,
+        tinyworld_scale=1,
         reset=True,
         terminate_on_first_box=False,
         reset_seed = None,
@@ -47,6 +48,7 @@ class SokobanEnv(gym.Env):
         # Rendering variables
         self.render_mode = render_mode
         self.tinyworld_render = tinyworld_render
+        self.tinyworld_scale = tinyworld_scale
 
         self.window = None
         self.clock = None
@@ -64,7 +66,12 @@ class SokobanEnv(gym.Env):
         self.viewer = None
         self.max_steps = max_steps
         self.action_space = Discrete(len(ACTION_LOOKUP))
-        sprite_sz = 1 if self.use_tiny_world else 16
+        if self.use_tiny_world:
+            sprite_sz = self.tinyworld_scale
+        elif self.render_mode == 'rgb_8x8':
+            sprite_sz = 8
+        else:
+            sprite_sz = 16
         screen_height, screen_width = (dim_room[0] * sprite_sz, dim_room[1] * sprite_sz)
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
         self.this_episode_steps = max_steps
@@ -88,15 +95,7 @@ class SokobanEnv(gym.Env):
 
         moved_box = False
 
-        if action == 0:
-            moved_player = False
-
-        # All push actions are in the range of [0, 3]
-        elif action < 5:
-            moved_player, moved_box = self._push(action)
-
-        else:
-            moved_player = self._move(action)
+        moved_player, moved_box = self._push(action)
 
         self._calc_reward()
         
@@ -124,7 +123,7 @@ class SokobanEnv(gym.Env):
         :param action:
         :return: Boolean, indicating a change of the room's state
         """
-        change = CHANGE_COORDINATES[(action - 1) % 4]
+        change = CHANGE_COORDINATES[action]
         new_position = self.player_position + change
         current_position = self.player_position.copy()
 
@@ -137,49 +136,25 @@ class SokobanEnv(gym.Env):
 
         can_push_box = self.room_state[new_position[0], new_position[1]] in [3, 4]
         can_push_box &= self.room_state[new_box_position[0], new_box_position[1]] in [1, 2]
-        if can_push_box:
-
-            self.new_box_position = tuple(new_box_position)
-            self.old_box_position = tuple(new_position)
-
-            # Move Player
+        can_move = self.room_state[new_position[0], new_position[1]] in [1, 2]
+        can_move |= can_push_box
+        if can_move:
             self.player_position = new_position
             self.room_state[(new_position[0], new_position[1])] = 5
             self.room_state[current_position[0], current_position[1]] = \
                 self.room_fixed[current_position[0], current_position[1]]
+
+        if can_push_box:
+            self.new_box_position = tuple(new_box_position)
+            self.old_box_position = tuple(new_position)
 
             # Move Box
             box_type = 4
             if self.room_fixed[new_box_position[0], new_box_position[1]] == 2:
                 box_type = 3
             self.room_state[new_box_position[0], new_box_position[1]] = box_type
-            return True, True
+        return can_move, can_push_box
 
-        # Try to move if no box to push, available
-        else:
-            return self._move(action), False
-
-    def _move(self, action):
-        """
-        Moves the player to the next field, if it is not occupied.
-        :param action:
-        :return: Boolean, indicating a change of the room's state
-        """
-        change = CHANGE_COORDINATES[(action - 1) % 4]
-        new_position = self.player_position + change
-        current_position = self.player_position.copy()
-
-        # Move player if the field in the moving direction is either
-        # an empty field or an empty box target.
-        if self.room_state[new_position[0], new_position[1]] in [1, 2]:
-            self.player_position = new_position
-            self.room_state[(new_position[0], new_position[1])] = 5
-            self.room_state[current_position[0], current_position[1]] = \
-                self.room_fixed[current_position[0], current_position[1]]
-
-            return True
-
-        return False
 
     def _calc_reward(self):
         """
@@ -257,9 +232,11 @@ class SokobanEnv(gym.Env):
     def get_image(self, use_tiny_world: bool | None = None):
         use_tiny_world = (self.use_tiny_world if use_tiny_world is None else use_tiny_world)
         if use_tiny_world:
-            img = room_to_tiny_world_rgb(self.room_state, self.room_fixed)
+            img = room_to_tiny_world_rgb(self.room_state, self.room_fixed, self.tinyworld_scale)
+        elif self.render_mode.startswith('rgb'):
+            img = room_to_rgb(self.room_state, self.room_fixed, is_8x8=self.render_mode == 'rgb_8x8')
         else:
-            img = room_to_rgb(self.room_state, self.room_fixed)
+            raise ValueError(f"Unknown Rendering Mode {self.render_mode}")
         return img
 
     def close(self):
@@ -277,15 +254,10 @@ class SokobanEnv(gym.Env):
 
 
 ACTION_LOOKUP = {
-    0: 'no operation',
-    1: 'push up',
-    2: 'push down',
-    3: 'push left',
-    4: 'push right',
-    5: 'move up',
-    6: 'move down',
-    7: 'move left',
-    8: 'move right',
+    0: 'push up',
+    1: 'push down',
+    2: 'push left',
+    3: 'push right',
 }
 
 # Moves are mapped to coordinate changes as follows
