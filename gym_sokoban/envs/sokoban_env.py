@@ -111,11 +111,8 @@ class SokobanEnv(gym.Env):
         if done:
             info["maxsteps_used"] = self._check_if_maxsteps()
             info["all_boxes_on_target"] = self._check_if_all_boxes_on_target()
-            info["is_success"] = info["all_boxes_on_target"] or \
-                ((self.terminate_on_first_box and self.boxes_on_target > 0))
+            info["is_success"] = done
 
-        done = self._check_if_all_boxes_on_target() or \
-                ((self.terminate_on_first_box and self.boxes_on_target > 0))
         return observation, self.reward_last, done, (not done) and self._check_if_maxsteps(), info
 
     def _push(self, action):
@@ -189,11 +186,9 @@ class SokobanEnv(gym.Env):
         self.boxes_on_target = current_boxes_on_target
 
     def _check_if_done(self):
-        # Check if the game is over either through reaching the maximum number
-        # of available steps or by pushing all boxes on the targets.        
-        return ((self.terminate_on_first_box and self.boxes_on_target > 0)
-                or self._check_if_all_boxes_on_target()
-                or self._check_if_maxsteps())
+        # Check if the game is over by pushing all boxes on the targets.
+        return self._check_if_all_boxes_on_target() or \
+                ((self.terminate_on_first_box and self.boxes_on_target > 0))
 
     def _check_if_all_boxes_on_target(self):
         empty_targets = self.room_state == 2
