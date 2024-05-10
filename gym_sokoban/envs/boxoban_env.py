@@ -104,10 +104,13 @@ class BoxobanEnv(SokobanEnv):
 
         starting_observation = self.get_image()
 
-        return starting_observation, {}
+        level_info = {"level_file_idx": self.level_file_idx, "level_idx": self.level_idx}
+        return starting_observation, level_info
 
     def select_map(self, level_file_idx=None, level_idx=None, seed=None):
         assert (level_file_idx is None) == (level_idx is None), "Both level_file_idx and level_idx must be provided together or not at all"
+        if seed is not None:
+            random.seed(seed)
         if level_file_idx is None:
             level_file_idx = random.randint(0, len(self.level_files) - 1)
         source_file = join(self.train_data_dir, self.level_files[level_file_idx])
@@ -125,11 +128,10 @@ class BoxobanEnv(SokobanEnv):
 
         maps.append(current_map)
 
-        if seed is not None:
-            random.seed(seed)
         if level_idx is None:
             level_idx = random.randint(0, len(maps) - 1)
         selected_map = maps[level_idx]
+        self.level_file_idx, self.level_idx = level_file_idx, level_idx
 
         if self.verbose:
             print(f'Selected Level {level_idx} from File "{self.level_files[level_file_idx]}"')
