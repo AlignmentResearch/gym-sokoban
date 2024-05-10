@@ -15,6 +15,7 @@ class SokobanEnv(gym.Env):
     def __init__(self,
         dim_room=(10, 10),
         max_steps=120,
+        min_episode_steps=60,
         num_boxes=4,
         num_gen_steps=None,
         render_mode='rgb_array',
@@ -29,6 +30,9 @@ class SokobanEnv(gym.Env):
         penalty_box_off_target = -1,
         penalty_for_step = -0.1,
     ):
+        self.min_episode_steps = min_episode_steps
+        if max_steps < self.min_episode_steps:
+            raise ValueError(f"{max_steps=} cannot be less than {min_episode_steps=}")
         self.terminate_on_first_box = terminate_on_first_box
 
         # General Configuration
@@ -70,6 +74,7 @@ class SokobanEnv(gym.Env):
             sprite_sz = 16
         screen_height, screen_width = (dim_room[0] * sprite_sz, dim_room[1] * sprite_sz)
         self.observation_space = Box(low=0, high=255, shape=(screen_height, screen_width, 3), dtype=np.uint8)
+        self.this_episode_steps = max_steps
 
         self.seed(reset_seed)
         if reset:
@@ -195,7 +200,7 @@ class SokobanEnv(gym.Env):
         return are_all_boxes_on_targets
 
     def _check_if_maxsteps(self):
-        return (self.max_steps == self.num_env_steps)
+        return (self.this_episode_steps == self.num_env_steps)
 
     def reset(self, seed=None, options={}, second_player=False, render_mode='rgb_array'):
         try:
@@ -209,6 +214,8 @@ class SokobanEnv(gym.Env):
             print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
             print("[SOKOBAN] Retry . . .")
             return self.reset(seed, second_player=second_player, render_mode=render_mode)
+
+        self.this_episode_steps = self.np_random.integers(self.min_episode_steps, self.max_steps+1)
 
         self.player_position = np.argwhere(self.room_state == 5)[0]
         self.num_env_steps = 0

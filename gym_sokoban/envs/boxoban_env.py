@@ -18,6 +18,7 @@ class BoxobanEnv(SokobanEnv):
     def __init__(
         self,
         max_steps=120,
+        min_episode_steps=60,
         difficulty="unfiltered",
         split="train",
         cache_path: str | Path = ".sokoban_cache",
@@ -79,6 +80,7 @@ class BoxobanEnv(SokobanEnv):
         super(BoxobanEnv, self).__init__(
             dim_room=self.dim_room,
             max_steps=max_steps,
+            min_episode_steps=min_episode_steps,
             num_boxes=self.num_boxes,
             render_mode=render_mode,
             tinyworld_obs=tinyworld_obs,
