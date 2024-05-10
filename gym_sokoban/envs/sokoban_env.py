@@ -114,7 +114,9 @@ class SokobanEnv(gym.Env):
             info["is_success"] = info["all_boxes_on_target"] or \
                 ((self.terminate_on_first_box and self.boxes_on_target > 0))
 
-        return observation, self.reward_last, done, False, info
+        done = self._check_if_all_boxes_on_target() or \
+                ((self.terminate_on_first_box and self.boxes_on_target > 0))
+        return observation, self.reward_last, done, (not done) and self._check_if_maxsteps(), info
 
     def _push(self, action):
         """
