@@ -5,6 +5,7 @@ from gymnasium.spaces import Box
 from .room_utils import generate_room
 from .render_utils import room_to_rgb, room_to_tiny_world_rgb
 import numpy as np
+import random
 
 class SokobanEnv(gym.Env):
     metadata = {
@@ -83,7 +84,24 @@ class SokobanEnv(gym.Env):
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
+        random.seed(seed)
         return [seed]
+
+    def next_observations(self):
+        actions = []
+        observations = []
+        for action in ACTION_LOOKUP:
+            can_move, _, (_, room_fixed, room_state) = self.take_action(action)
+            if self.use_tiny_world:
+                obs = room_to_tiny_world_rgb(room_state, room_fixed, self.tinyworld_scale)
+            elif self.render_mode.startswith('rgb'):
+                obs = room_to_rgb(room_state, room_fixed, is_8x8=self.render_mode == 'rgb_8x8')
+            else:
+                raise ValueError(f"Unknown Rendering Mode {self.render_mode}")
+            if can_move:
+                observations.append(obs)
+                actions.append(action)
+        return actions, observations
 
     def step(self, action):
         assert isinstance(action, int) or action.shape == ()
@@ -115,13 +133,7 @@ class SokobanEnv(gym.Env):
 
         return observation, self.reward_last, done, (not done) and self._check_if_maxsteps(), info
 
-    def _push(self, action):
-        """
-        Perform a push, if a box is adjacent in the right direction.
-        If no box, can be pushed, try to move.
-        :param action:
-        :return: Boolean, indicating a change of the room's state
-        """
+    def take_action(self, action):
         change = CHANGE_COORDINATES[action]
         new_position = self.player_position + change
         current_position = self.player_position.copy()
@@ -130,18 +142,20 @@ class SokobanEnv(gym.Env):
         new_box_position = new_position + change
         if new_box_position[0] >= self.room_state.shape[0] \
                 or new_box_position[1] >= self.room_state.shape[1]:
-            return False, False
+            return False, False, (current_position, self.room_fixed, self.room_state)
 
 
         can_push_box = self.room_state[new_position[0], new_position[1]] in [3, 4]
         can_push_box &= self.room_state[new_box_position[0], new_box_position[1]] in [1, 2]
         can_move = self.room_state[new_position[0], new_position[1]] in [1, 2]
         can_move |= can_push_box
+
+        new_room_state = self.room_state.copy()
+        new_room_fixed = self.room_fixed.copy()
         if can_move:
-            self.player_position = new_position
-            self.room_state[(new_position[0], new_position[1])] = 5
-            self.room_state[current_position[0], current_position[1]] = \
-                self.room_fixed[current_position[0], current_position[1]]
+            new_room_state[(new_position[0], new_position[1])] = 5
+            new_room_state[current_position[0], current_position[1]] = \
+                new_room_fixed[current_position[0], current_position[1]]
 
         if can_push_box:
             self.new_box_position = tuple(new_box_position)
@@ -149,9 +163,21 @@ class SokobanEnv(gym.Env):
 
             # Move Box
             box_type = 4
-            if self.room_fixed[new_box_position[0], new_box_position[1]] == 2:
+            if new_room_fixed[new_box_position[0], new_box_position[1]] == 2:
                 box_type = 3
-            self.room_state[new_box_position[0], new_box_position[1]] = box_type
+            new_room_state[new_box_position[0], new_box_position[1]] = box_type
+        return can_move, can_push_box, (new_position, new_room_fixed, new_room_state)
+
+    def _push(self, action):
+        """
+        Perform a push, if a box is adjacent in the right direction.
+        If no box, can be pushed, try to move.
+        :param action:
+        :return: Boolean, indicating a change of the room's state
+        """
+        can_move, can_push_box, new_pos_and_room = self.take_action(action)
+        self.player_position, self.room_fixed, self.room_state = new_pos_and_room
+
         return can_move, can_push_box
 
 
@@ -212,7 +238,7 @@ class SokobanEnv(gym.Env):
             print("[SOKOBAN] Retry . . .")
             return self.reset(seed, second_player=second_player, render_mode=render_mode)
 
-        self.this_episode_steps = self.np_random.integers(self.min_episode_steps, self.max_steps+1)
+        self.this_episode_steps = self.np_random.integers(self.min_episode_steps, self.max_steps+1).item()
 
         self.player_position = np.argwhere(self.room_state == 5)[0]
         self.num_env_steps = 0
