@@ -141,7 +141,8 @@ class SokobanEnv(gym.Env):
         # No push, if the push would get the box out of the room's grid
         new_box_position = new_position + change
         if new_box_position[0] >= self.room_state.shape[0] \
-                or new_box_position[1] >= self.room_state.shape[1]:
+                or new_box_position[1] >= self.room_state.shape[1] \
+                or new_box_position[0] < 0 or new_box_position[1] < 0:
             return False, False, (current_position, self.room_fixed, self.room_state)
 
 
@@ -152,7 +153,9 @@ class SokobanEnv(gym.Env):
 
         new_room_state = self.room_state.copy()
         new_room_fixed = self.room_fixed.copy()
+        updated_player_position = current_position
         if can_move:
+            updated_player_position = new_position
             new_room_state[(new_position[0], new_position[1])] = 5
             new_room_state[current_position[0], current_position[1]] = \
                 new_room_fixed[current_position[0], current_position[1]]
@@ -166,7 +169,7 @@ class SokobanEnv(gym.Env):
             if new_room_fixed[new_box_position[0], new_box_position[1]] == 2:
                 box_type = 3
             new_room_state[new_box_position[0], new_box_position[1]] = box_type
-        return can_move, can_push_box, (new_position, new_room_fixed, new_room_state)
+        return can_move, can_push_box, (updated_player_position, new_room_fixed, new_room_state)
 
     def _push(self, action):
         """
