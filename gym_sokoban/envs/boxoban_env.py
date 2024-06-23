@@ -101,6 +101,7 @@ class BoxobanEnv(SokobanEnv):
         self.num_env_steps = 0
         self.reward_last = 0
         self.boxes_on_target = 0
+        self.this_episode_steps = self.np_random.integers(self.min_episode_steps, self.max_steps+1).item()
 
         starting_observation = self.get_image()
 

@@ -106,6 +106,51 @@ def room_to_tiny_world_rgb(room, room_structure=None, scale=1):
     return room_small_rgb
 
 
+def tiny_world_rgb_to_room(rgb, scale=1):
+    rgb = np.array(rgb)
+    room = np.zeros(shape=(rgb.shape[0]//scale, rgb.shape[1]//scale), dtype=np.uint8)
+
+    wall = [0, 0, 0]
+    floor = [243, 248, 238]
+    box_target = [254, 126, 125]
+    box_on_target = [254, 95, 56]
+    box = [142, 121, 56]
+    player = [160, 212, 56]
+    player_on_target = [219, 212, 56]
+
+
+    for i in range(room.shape[0]):
+        x_i = i * scale
+        for j in range(room.shape[1]):
+            y_j = j * scale
+            pixel = rgb[x_i:(x_i+scale), y_j:(y_j+scale), :]
+            if np.all(pixel == wall):
+                room[i, j] = 0
+            elif np.all(pixel == floor):
+                room[i, j] = 1
+            elif np.all(pixel == box_target):
+                room[i, j] = 2
+            elif np.all(pixel == box_on_target):
+                room[i, j] = 3
+            elif np.all(pixel == box):
+                room[i, j] = 4
+            elif np.all(pixel == player):
+                room[i, j] = 5
+                player_position = i
+            elif np.all(pixel == player_on_target):
+                room[i, j] = 6
+
+    room_fixed = room.copy()
+    room_fixed[room == 3] = 1
+    room_fixed[room == 4] = 1
+    room_fixed[room == 5] = 1
+    room_fixed[room == 6] = 1
+
+    player_position = np.argwhere(room == 5)[0]
+    
+    return room_fixed, room, player_position
+
+
 def room_to_rgb_FT(room, box_mapping, room_structure=None):
     """
     Creates an RGB image of the room.
