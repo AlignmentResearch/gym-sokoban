@@ -1,3 +1,4 @@
+from typing import Sequence
 from .sokoban_env import SokobanEnv
 from .render_utils import room_to_rgb
 import os
@@ -138,6 +139,11 @@ class BoxobanEnv(SokobanEnv):
         return selected_map
 
     def select_room(self, level_file_idx=None, level_idx=None, seed=None) -> None:
+        if isinstance(level_file_idx, Sequence) and isinstance(level_idx, Sequence):
+            assert seed is not None
+            level_file_idx = level_file_idx[seed]
+            level_idx = level_idx[seed]
+
         selected_map = self.select_map(level_file_idx=level_file_idx, level_idx=level_idx, seed=seed)
         self.room_fixed, self.room_state, self.box_mapping = self.generate_room(selected_map)
 
