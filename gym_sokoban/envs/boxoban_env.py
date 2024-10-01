@@ -109,8 +109,8 @@ class BoxobanEnv(SokobanEnv):
         try:
             self.player_position = np.argwhere(self.room_state == 5)[0]
         except IndexError:
-            assert custom_level, "player position can only be different from 5 in custom levels"
-            self.player_position = np.argwhere(self.room_state == 6)[0]    
+            # assert custom_level, "player position can only be different from 5 in custom levels"
+            self.player_position = np.argwhere(self.room_state == 6)[0]
 
         self.num_env_steps = 0
         self.reward_last = 0
@@ -177,11 +177,20 @@ class BoxobanEnv(SokobanEnv):
                     room_f.append(1)
                     room_s.append(5)
 
+                elif e == '+':
+                    self.player_position = np.array([len(room_fixed), len(room_f)])
+                    room_f.append(2)
+                    room_s.append(6)
 
                 elif e == '$':
                     boxes.append((len(room_fixed), len(room_f)))
                     room_f.append(1)
                     room_s.append(4)
+
+                elif e == '*':
+                    boxes.append((len(room_fixed), len(room_f)))
+                    room_f.append(2)
+                    room_s.append(3)
 
                 elif e == '.':
                     targets.append((len(room_fixed), len(room_f)))
@@ -199,6 +208,8 @@ class BoxobanEnv(SokobanEnv):
         # used for replay in room generation, unused here because pre-generated levels
         box_mapping = {}
 
+        print("\n".join("".join(s) for s in select_map))
+        print(room_state)
         return np.array(room_fixed), np.array(room_state), box_mapping
 
 
