@@ -46,6 +46,32 @@ def generate_room(dim=(13, 13), p_change_directions=0.35, num_steps=25, num_boxe
 
     return room_structure, room_state, box_mapping
 
+def generate_custom_room(walls, boxes, targets, player, dim=(10, 10)):
+    INV_TYPE_LOOKUP = {v: k for k, v in TYPE_LOOKUP.items()}
+    room_state = np.ones(shape=dim) * INV_TYPE_LOOKUP["empty space"]
+    room_structure = np.ones(shape=dim)
+
+    for wall in walls:
+        room_structure[*wall] = INV_TYPE_LOOKUP["wall"]
+        room_state[*wall] = INV_TYPE_LOOKUP["wall"]
+
+    boxes_on_targets = set(boxes) & set(targets)
+    for box_on_target in boxes_on_targets:
+        room_state[*box_on_target] = INV_TYPE_LOOKUP["box on target"]
+
+    for box_not_on_target in (set(boxes) - boxes_on_targets):
+        room_state[*box_not_on_target] = INV_TYPE_LOOKUP["box not on target"]
+
+    for target in (set(targets) - boxes_on_targets):
+        room_state[*target] = INV_TYPE_LOOKUP["box target"]
+
+    if player in targets:
+        room_state[*player] = INV_TYPE_LOOKUP["player on target"]
+    else:
+        room_state[*player] = INV_TYPE_LOOKUP["player"]
+
+    return room_structure, room_state
+
 
 def room_topology_generation(dim=(10, 10), p_change_directions=0.35, num_steps=15):
     """
@@ -325,7 +351,8 @@ TYPE_LOOKUP = {
     2: 'box target',
     3: 'box on target',
     4: 'box not on target',
-    5: 'player'
+    5: 'player',
+    6: 'player on target'
 }
 
 ACTION_LOOKUP = {

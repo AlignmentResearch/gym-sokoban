@@ -95,8 +95,22 @@ class BoxobanEnv(SokobanEnv):
             penalty_for_step=penalty_for_step,
         )
 
-    def reset(self, seed=None, options=None):
-        self.select_room(seed=seed, **(options or {}))
+    def reset(self, seed=None, options={}):
+        custom_level = False
+        if "walls" in options:
+            for k in ["walls", "boxes", "targets", "player"]:
+                assert k in options
+            custom_level = True
+            self.set_custom_map(options["walls"], options["boxes"], options["targets"], options["player"])
+            self.level_file_idx, self.level_idx = None, None
+        else:
+            self.select_room(seed=seed, **(options or {}))
+
+        try:
+            self.player_position = np.argwhere(self.room_state == 5)[0]
+        except IndexError:
+            assert custom_level, "player position can only be different from 5 in custom levels"
+            self.player_position = np.argwhere(self.room_state == 6)[0]    
 
         self.num_env_steps = 0
         self.reward_last = 0

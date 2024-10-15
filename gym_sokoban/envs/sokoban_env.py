@@ -2,7 +2,7 @@ import gymnasium as gym
 from gymnasium.utils import seeding
 from gymnasium.spaces.discrete import Discrete
 from gymnasium.spaces import Box
-from .room_utils import generate_room
+from .room_utils import generate_room, generate_custom_room
 from .render_utils import room_to_rgb, room_to_tiny_world_rgb
 import numpy as np
 import random
@@ -229,27 +229,43 @@ class SokobanEnv(gym.Env):
         return (self.this_episode_steps == self.num_env_steps)
 
     def reset(self, seed=None, options={}, second_player=False, render_mode='rgb_array'):
-        try:
-            self.room_fixed, self.room_state, self.box_mapping = generate_room(
-                dim=self.dim_room,
-                num_steps=self.num_gen_steps,
-                num_boxes=self.num_boxes,
-                second_player=second_player
-            )
-        except (RuntimeError, RuntimeWarning) as e:
-            print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
-            print("[SOKOBAN] Retry . . .")
-            return self.reset(seed, second_player=second_player, render_mode=render_mode)
+        custom_level = False
+        if "walls" in options:
+            for k in ["walls", "boxes", "targets", "player"]:
+                assert k in options
+            custom_level = True
+            self.set_custom_map(options["walls"], options["boxes"], options["targets"], options["player"])
+        else:
+            try:
+                self.room_fixed, self.room_state, self.box_mapping = generate_room(
+                    dim=self.dim_room,
+                    num_steps=self.num_gen_steps,
+                    num_boxes=self.num_boxes,
+                    second_player=second_player
+                )
+            except (RuntimeError, RuntimeWarning) as e:
+                print("[SOKOBAN] Runtime Error/Warning: {}".format(e))
+                print("[SOKOBAN] Retry . . .")
+                return self.reset(seed, second_player=second_player, render_mode=render_mode)
 
         self.this_episode_steps = self.np_random.integers(self.min_episode_steps, self.max_steps+1).item()
 
-        self.player_position = np.argwhere(self.room_state == 5)[0]
+        try:
+            self.player_position = np.argwhere(self.room_state == 5)[0]
+        except IndexError:
+            assert custom_level, "player position can only be different from 5 in custom levels"
+            self.player_position = np.argwhere(self.room_state == 6)[0]
         self.num_env_steps = 0
         self.reward_last = 0
         self.boxes_on_target = 0
 
         starting_observation = self.get_image()
         return starting_observation, {}
+    
+    def set_custom_map(self, walls, boxes, targets, player):
+        self.room_fixed, self.room_state = generate_custom_room(walls, boxes, targets, player, dim=self.dim_room)
+        self.box_mapping = None
+        return
 
     def render(self):
         img = self.get_image(use_tiny_world=self.tinyworld_render)
