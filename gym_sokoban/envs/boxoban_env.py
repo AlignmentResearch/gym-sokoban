@@ -207,9 +207,6 @@ class BoxobanEnv(SokobanEnv):
 
         # used for replay in room generation, unused here because pre-generated levels
         box_mapping = {}
-
-        print("\n".join("".join(s) for s in select_map))
-        print(room_state)
         return np.array(room_fixed), np.array(room_state), box_mapping
 
 
