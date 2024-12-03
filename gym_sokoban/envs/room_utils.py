@@ -64,6 +64,7 @@ def generate_custom_room(walls, boxes, targets, player, dim=(10, 10)):
 
     for target in (set(targets) - boxes_on_targets):
         room_state[*target] = INV_TYPE_LOOKUP["box target"]
+        room_structure[*target] = 2
 
     if player in targets:
         room_state[*player] = INV_TYPE_LOOKUP["player on target"]
