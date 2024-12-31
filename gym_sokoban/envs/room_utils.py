@@ -52,19 +52,19 @@ def generate_custom_room(walls, boxes, targets, player, dim=(10, 10)):
     room_structure = np.ones(shape=dim)
 
     for wall in walls:
-        room_structure[*wall] = INV_TYPE_LOOKUP["wall"]
-        room_state[*wall] = INV_TYPE_LOOKUP["wall"]
+        room_structure[wall[0], wall[1]] = INV_TYPE_LOOKUP["wall"]
+        room_state[wall[0], wall[1]] = INV_TYPE_LOOKUP["wall"]
 
     boxes_on_targets = set(boxes) & set(targets)
     for box_on_target in boxes_on_targets:
-        room_state[*box_on_target] = INV_TYPE_LOOKUP["box on target"]
+        room_state[box_on_target[0], box_on_target[1]] = INV_TYPE_LOOKUP["box on target"]
 
     for box_not_on_target in (set(boxes) - boxes_on_targets):
-        room_state[*box_not_on_target] = INV_TYPE_LOOKUP["box not on target"]
+        room_state[box_not_on_target[0], box_not_on_target[1]] = INV_TYPE_LOOKUP["box not on target"]
 
     for target in (set(targets) - boxes_on_targets):
-        room_state[*target] = INV_TYPE_LOOKUP["box target"]
-        room_structure[*target] = 2
+        room_state[target[0], target[1]] = INV_TYPE_LOOKUP["box target"]
+        room_structure[target[0], target[1]] = 2
 
     if isinstance(player[0], int):
         player = [player]
@@ -73,9 +73,9 @@ def generate_custom_room(walls, boxes, targets, player, dim=(10, 10)):
     for p in player:
         assert len(p) == 2
         if p in targets:
-            room_state[*p] = INV_TYPE_LOOKUP["player on target"]
+            room_state[p[0], p[1]] = INV_TYPE_LOOKUP["player on target"]
         else:
-            room_state[*p] = INV_TYPE_LOOKUP["player"]
+            room_state[p[0], p[1]] = INV_TYPE_LOOKUP["player"]
     return room_structure, room_state
 
 
