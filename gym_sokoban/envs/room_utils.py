@@ -1,7 +1,7 @@
 import random
 import numpy as np
 import marshal
-
+import warnings
 
 def generate_room(dim=(13, 13), p_change_directions=0.35, num_steps=25, num_boxes=3, tries=4, second_player=False):
     """
@@ -52,24 +52,30 @@ def generate_custom_room(walls, boxes, targets, player, dim=(10, 10)):
     room_structure = np.ones(shape=dim)
 
     for wall in walls:
-        room_structure[*wall] = INV_TYPE_LOOKUP["wall"]
-        room_state[*wall] = INV_TYPE_LOOKUP["wall"]
+        room_structure[wall[0], wall[1]] = INV_TYPE_LOOKUP["wall"]
+        room_state[wall[0], wall[1]] = INV_TYPE_LOOKUP["wall"]
 
     boxes_on_targets = set(boxes) & set(targets)
     for box_on_target in boxes_on_targets:
-        room_state[*box_on_target] = INV_TYPE_LOOKUP["box on target"]
+        room_state[box_on_target[0], box_on_target[1]] = INV_TYPE_LOOKUP["box on target"]
 
     for box_not_on_target in (set(boxes) - boxes_on_targets):
-        room_state[*box_not_on_target] = INV_TYPE_LOOKUP["box not on target"]
+        room_state[box_not_on_target[0], box_not_on_target[1]] = INV_TYPE_LOOKUP["box not on target"]
 
     for target in (set(targets) - boxes_on_targets):
-        room_state[*target] = INV_TYPE_LOOKUP["box target"]
+        room_state[target[0], target[1]] = INV_TYPE_LOOKUP["box target"]
+        room_structure[target[0], target[1]] = 2
 
-    if player in targets:
-        room_state[*player] = INV_TYPE_LOOKUP["player on target"]
+    if isinstance(player[0], int):
+        player = [player]
     else:
-        room_state[*player] = INV_TYPE_LOOKUP["player"]
-
+        warnings.warn("Multiple players found.")
+    for p in player:
+        assert len(p) == 2
+        if p in targets:
+            room_state[p[0], p[1]] = INV_TYPE_LOOKUP["player on target"]
+        else:
+            room_state[p[0], p[1]] = INV_TYPE_LOOKUP["player"]
     return room_structure, room_state
 
 

@@ -30,6 +30,7 @@ class SokobanEnv(gym.Env):
         reward_box_on_target = 1,
         penalty_box_off_target = -1,
         penalty_for_step = -0.1,
+        reward_noop = 0.0,
     ):
         self.min_episode_steps = min_episode_steps
         if max_steps < self.min_episode_steps:
@@ -59,6 +60,7 @@ class SokobanEnv(gym.Env):
         self.reward_box_on_target = reward_box_on_target
         self.penalty_box_off_target = penalty_box_off_target
         self.penalty_for_step = penalty_for_step
+        self.reward_noop = reward_noop
         self.reward_last = 0
 
         # Other Settings
@@ -115,7 +117,7 @@ class SokobanEnv(gym.Env):
 
         moved_player, moved_box = self._push(action)
 
-        self._calc_reward()
+        self._calc_reward(action)
         
         done = self._check_if_done()
 
@@ -184,7 +186,7 @@ class SokobanEnv(gym.Env):
         return can_move, can_push_box
 
 
-    def _calc_reward(self):
+    def _calc_reward(self, action):
         """
         Calculate Reward Based on
         :return:
@@ -192,6 +194,7 @@ class SokobanEnv(gym.Env):
         # Every step a small penalty is given, This ensures
         # that short solutions have a higher reward.
         self.reward_last = self.penalty_for_step
+        self.reward_last += self.reward_noop if action == 4 else 0
 
         # count boxes off or on the target
         empty_targets = self.room_state == 2
@@ -300,6 +303,7 @@ ACTION_LOOKUP = {
     1: 'push down',
     2: 'push left',
     3: 'push right',
+    4: 'no-op',
 }
 
 # Moves are mapped to coordinate changes as follows
@@ -311,7 +315,8 @@ CHANGE_COORDINATES = {
     0: (-1, 0),
     1: (1, 0),
     2: (0, -1),
-    3: (0, 1)
+    3: (0, 1),
+    4: (0, 0),
 }
 
 RENDERING_MODES = ['rgb_array', 'human', 'tiny_rgb_array', 'tiny_human', 'raw']
