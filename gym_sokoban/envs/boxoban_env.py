@@ -13,7 +13,6 @@ from pathlib import Path
 class BoxobanEnv(SokobanEnv):
     # These are fixed because they come from the data files
     num_boxes = 4
-    dim_room = (10, 10)
 
     def __init__(
         self,
@@ -34,7 +33,9 @@ class BoxobanEnv(SokobanEnv):
         penalty_box_off_target = -1,
         penalty_for_step = -0.1,
         reward_noop = 0.0,
+        dim_room = (10, 10),
     ):
+        self.dim_room = dim_room
         self.difficulty = difficulty
         self.split = split
         self.verbose = False
@@ -103,7 +104,7 @@ class BoxobanEnv(SokobanEnv):
             for k in ["walls", "boxes", "targets", "player"]:
                 assert k in options
             custom_level = True
-            self.set_custom_map(options["walls"], options["boxes"], options["targets"], options["player"])
+            self.set_custom_map(**{k: options[k] for k in options.keys() if k in ["walls", "boxes", "targets", "player", "dim_room"]})
             self.level_file_idx, self.level_idx = None, None
         else:
             self.select_room(seed=seed, **(options or {}))
