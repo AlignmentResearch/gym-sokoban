@@ -158,6 +158,7 @@ class BoxobanEnv(SokobanEnv):
     def select_room(self, level_file_idx=None, level_idx=None, seed=None) -> None:
         selected_map = self.select_map(level_file_idx=level_file_idx, level_idx=level_idx, seed=seed)
         self.room_fixed, self.room_state, self.box_mapping = self.generate_room(selected_map)
+        self.pad_room()
 
 
     def generate_room(self, select_map):
@@ -212,6 +213,13 @@ class BoxobanEnv(SokobanEnv):
         box_mapping = {}
         return np.array(room_fixed), np.array(room_state), box_mapping
 
+    def pad_room(self):
+        if self.room_fixed.shape[0] <= self.dim_room[0] or self.room_fixed.shape[1] <= self.dim_room[1]:
+            dim_room, room_shape = np.array(self.dim_room), np.array(self.room_fixed.shape)
+            before = np.maximum(0, (dim_room - room_shape) // 2)
+            after = np.maximum(0, dim_room - room_shape - before)
+            self.room_fixed = np.pad(self.room_fixed, ((before[0], after[0]), (before[1], after[1])), 'constant', constant_values=0)
+            self.room_state = np.pad(self.room_state, ((before[0], after[0]), (before[1], after[1])), 'constant', constant_values=0)
 
 class FixedBoxobanEnv(BoxobanEnv):
     def select_room(self, seed=None) -> None:
