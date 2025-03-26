@@ -131,6 +131,7 @@ class BoxobanEnv(SokobanEnv):
             random.seed(seed)
         if level_file_idx is None:
             level_file_idx = random.randint(0, len(self.level_files) - 1)
+        assert 0 <= level_file_idx < len(self.level_files), f"{level_file_idx} not in range [0, {len(self.level_files)})"
         source_file = join(self.train_data_dir, self.level_files[level_file_idx])
 
         maps = []
@@ -144,10 +145,12 @@ class BoxobanEnv(SokobanEnv):
                 if '#' == line[0]:
                     current_map.append(line.strip())
 
-        maps.append(current_map)
+        if current_map:
+            maps.append(current_map)
 
         if level_idx is None:
             level_idx = random.randint(0, len(maps) - 1)
+        assert 0 <= level_idx < len(maps), f"{level_idx} not in range [0, {len(maps)}]"
         selected_map = maps[level_idx]
         self.level_file_idx, self.level_idx = level_file_idx, level_idx
 
