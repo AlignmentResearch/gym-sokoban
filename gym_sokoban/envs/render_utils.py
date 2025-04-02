@@ -72,7 +72,7 @@ def room_to_rgb(room, room_structure=None, is_8x8=False):
             y_j = j * size
             surfaces_id = room[i, j]
 
-            room_rgb[x_i:(x_i + size), y_j:(y_j + size), :] = surfaces[surfaces_id]
+            room_rgb[x_i:(x_i + size), y_j:(y_j + size), :] = surfaces[int(surfaces_id)]
 
     return room_rgb
 
